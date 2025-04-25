@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browser Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.5s ease;
+    }
+
+    .header-container, .profile-info {
+      width: 90%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      background-color: #deefff;
+    }
+
+    .header-container, .profile-info p {
+      margin: 5px 0;
+    }
+
+    .header-container {
+      background-color: #185186;
+      color: white;
+      text-align: center;
+      padding: 5px 9px;
+    }
+
+    .profile-info {
+      color: #333;
+      margin-top: 20px;
+      background-color: #deefff;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #deefff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #info p {
+      word-break: break-all;
+      overflow-wrap: break-word;
+    }
+
+    .dark-theme .container,
+    .dark-theme .header-container,
+    .dark-theme .profile-info {
+      background-color: #333;
+      color: white;
+    }
+
+    button {
+      margin: 10px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #0077b6;
+      color: white;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #023e8a;
+    }
+
+    .dark-theme button {
+      background-color: #444;
+      color: white;
+    }
+
+    .dark-theme button:hover {
+      background-color: #0099cc;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header Information -->
+  <div class="header-container">
+    <h1 id="pageTitle">Browser Dashboard</h1>
+    <h2>Joan Mae Palaypayon</h2>
+  </div>
+
+  <!-- Personal Information Below Header -->
+  <div class="profile-info">
+    <p><strong>Sex:</strong> Female</p>
+    <p><strong>Address:</strong> Ponglon, San Jose, Camarines Sur</p>
+    <p><strong>Course/Year/Section:</strong> BSIT_2B</p>
+    <p><strong>Name of School:</strong> Partido State University (PSU)</p>
+    <p><strong>Semester and Academic Year:</strong> 2nd Sem / 2024–2025</p>
+    <p><strong>Subject Code and Title:</strong> PF2 – Event Driven Programming</p>
+    <p><strong>Instructor:</strong> Arjay Abio</p>
+  </div>
+
+  <!-- Browser Environment Container -->
+  <div class="container">
+    <div id="info"></div>
+    <button id="goBack">Go Back</button>
+    <button id="goForward">Go Forward</button>
+    <button id="reloadPage">Reload Page</button>
+    <button id="changeLocation">Change Location</button>
+    <button id="windowSize">Show Window Size</button>
+    <button id="toggleTheme">Toggle Dark/Light Theme</button>
+    <button id="changeTitleBtn">Change Page Title</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Function: Change body background based on window width
+      function changeBackgroundColor() {
+        const width = window.innerWidth;
+        if (width < 600) {
+          document.body.style.backgroundColor = 'lightblue'; // Mobile
+        } else if (width >= 600 && width <= 991) {
+          document.body.style.backgroundColor = 'lightgreen'; // Tablet
+        } else {
+          document.body.style.backgroundColor = '#ffd79b'; // Desktop
+        }
+      }
+
+      changeBackgroundColor();
+      window.addEventListener('resize', changeBackgroundColor);
+
+      // Theme persistence
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add("dark-theme");
+      }
+
+      if (localStorage.getItem('title')) {
+        document.title = localStorage.getItem('title');
+        document.getElementById("pageTitle").textContent = localStorage.getItem('title');
+      }
+
+      // Populate browser info
+      const infoDiv = document.getElementById("info");
+      infoDiv.innerHTML = `
+        <p><strong>Browser:</strong> ${navigator.appName}</p>
+        <p><strong>Version:</strong> ${navigator.appVersion}</p>
+        <p><strong>Platform:</strong> ${navigator.platform}</p>
+        <p><strong>Java Enabled:</strong> ${navigator.javaEnabled()}</p>
+        <p><strong>Color Depth:</strong> ${screen.colorDepth} bits</p>
+        <p><strong>Screen Width:</strong> ${screen.width}px</p>
+        <p><strong>Screen Height:</strong> ${screen.height}px</p>
+        <p><strong>Current URL:</strong> ${location.href}</p>
+        <p><strong>Document Title:</strong> ${document.title}</p>
+      `;
+
+      // Buttons
+      document.getElementById("goBack").addEventListener("click", function () {
+        if (document.referrer && new URL(document.referrer).origin === location.origin) {
+          history.back();
+        } else {
+          window.location.href = "index.html";
+        }
+      });
+
+      document.getElementById("goForward").addEventListener("click", function () {
+        history.forward();
+      });
+
+      document.getElementById("reloadPage").addEventListener("click", function () {
+        location.reload();
+      });
+
+      document.getElementById("changeLocation").addEventListener("click", function () {
+        const newURL = prompt("Enter a URL to navigate:", "https://www.google.com");
+        if (newURL) location.href = newURL;
+      });
+
+      document.getElementById("windowSize").addEventListener("click", function () {
+        alert(`Window Size: Width = ${window.innerWidth}, Height = ${window.innerHeight}`);
+      });
+
+      let isDarkTheme = document.body.classList.contains("dark-theme");
+      document.getElementById("toggleTheme").addEventListener("click", function () {
+        document.body.classList.toggle("dark-theme");
+        localStorage.setItem('theme', isDarkTheme ? 'light' : 'dark');
+        isDarkTheme = !isDarkTheme;
+      });
+
+      // Title change button
+      document.getElementById("changeTitleBtn").addEventListener("click", function () {
+        const newTitle = prompt("Enter a new page title:", document.title);
+        if (newTitle) {
+          document.title = newTitle;
+          document.getElementById("pageTitle").textContent = newTitle;
+          localStorage.setItem('title', newTitle);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
